@@ -1,36 +1,37 @@
-import styled from 'styled-components';
 import { useState } from 'react';
-import { LeftArrowCircle } from '@styled-icons/boxicons-solid/LeftArrowCircle';
+import styled from 'styled-components';
 import { RightArrowCircle } from '@styled-icons/boxicons-solid/RightArrowCircle';
+import { LeftArrowCircle } from '@styled-icons/boxicons-solid/LeftArrowCircle';
+import { SmileBeam } from '@styled-icons/fa-solid/SmileBeam';
 import { Shocked2 } from '@styled-icons/icomoon/Shocked2';
 import { SadCry } from '@styled-icons/fa-solid/SadCry';
-import { SmileBeam } from '@styled-icons/fa-solid/SmileBeam';
+import { getBool } from '../lib/helperFunctions';
 
 export default function FetchAnswerCards({
-  cards,
-  setIsLoading,
   load,
-  setLoad,
   page,
+  cards,
+  score,
+  setLoad,
   setPage,
   setScore,
-  score,
   completed,
+  setIsLoading,
   setCompleted,
 }) {
   const [show, setShow] = useState(false);
-
-  function getBool(val) {
-    const num = +val;
-    return !isNaN(num) ? !!num : !!String(val).toLowerCase().replace(!!0, '');
-  }
-
-  let correctChecker;
+  const answeredPage = (page + 1).toString();
+  const answered = completed.includes(answeredPage);
   const correct = +getBool(cards[page].correctAnswer);
 
+  const ratio = score / completed.length;
+  const shockScore = ratio >= 0.35 && ratio <= 0.5;
+  const goodScore = ratio > 0.5;
+
+  let isCorrect;
   if (correct === 1 && show) {
-    correctChecker = true;
-  } else correctChecker = false;
+    isCorrect = true;
+  } else isCorrect = false;
 
   const handlePrevPage = () => {
     setShow(false);
@@ -42,16 +43,11 @@ export default function FetchAnswerCards({
   const handleNextPage = () => {
     setPage((prevPage) => prevPage + 1);
     setShow(false);
-    console.log(completed);
-
     if (page === cards.length - 1) {
       setLoad(!load);
       setIsLoading(true);
     }
   };
-
-  const answeredPage = (page + 1).toString();
-  const answered = completed.includes(answeredPage);
 
   const handleButtonClick = (event) => {
     event.preventDefault();
@@ -61,27 +57,23 @@ export default function FetchAnswerCards({
     setShow(!show);
   };
 
-  const ratio = score / completed.length;
-  const shockScore = ratio >= 0.35 && ratio <= 0.5;
-  const goodScore = ratio > 0.5;
-
   return (
     <>
       <ButtonWrapper>
         <BackIcon onClick={handlePrevPage} />
         <TrueButton
-          value={correct ? 1 : 0}
-          correct={correctChecker}
-          onClick={handleButtonClick}
           show={show}
+          correct={isCorrect}
+          value={correct ? 1 : 0}
+          onClick={handleButtonClick}
         >
           True
         </TrueButton>
         <FalseButton
-          value={correct ? 0 : 1}
-          correct={correctChecker}
-          onClick={handleButtonClick}
           show={show}
+          correct={isCorrect}
+          value={correct ? 0 : 1}
+          onClick={handleButtonClick}
         >
           False
         </FalseButton>
@@ -101,47 +93,82 @@ export default function FetchAnswerCards({
   );
 }
 
+const TrueButton = styled.button`
+  border: ${({ correct }) => (correct ? 'solid 2px green' : 'solid 2px red')};
+  border: ${({ show }) => !show && 'solid 2px var(--clr-bor)'};
+  background: transparent;
+  border-radius: 10px;
+  color: var(--fc);
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  min-width: 6rem;
+  padding: 1rem;
+`;
+
+const FalseButton = styled.button`
+  border: ${({ correct }) => (correct ? 'solid 2px red' : 'solid 2px green')};
+  border: ${({ show }) => !show && 'solid 2px var(--clr-bor)'};
+  background: transparent;
+  border-radius: 10px;
+  color: var(--fc);
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  min-width: 6rem;
+  padding: 1rem;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  max-width: 500px;
+  padding: 1rem 0;
+  width: 100%;
+`;
+
 const ScoreWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem 0rem;
+  padding: 1rem 0;
 
   p {
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
   }
 `;
 
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 1rem;
-  width: 100%;
-  max-width: 500px;
-  border: solid white 1px;
-`;
-
 const BackIcon = styled(LeftArrowCircle)`
-  color: white;
-  width: 35px;
-  height: 35px;
+  color: var(--fc);
   cursor: pointer;
+  height: 35px;
   margin: 0;
+  width: 35px;
+
+  transition: transform 550ms;
+  &:hover {
+    transform: scale(1.15);
+  }
 `;
 
 const NextIcon = styled(RightArrowCircle)`
-  color: white;
-  width: 35px;
-  height: 35px;
+  color: var(--fc);
   cursor: pointer;
+  height: 35px;
   margin: 0;
+  width: 35px;
+
+  transition: transform 550ms;
+  &:hover {
+    transform: scale(1.15);
+  }
 `;
 
 const SadIcon = styled(SadCry)`
-  color: white;
+  color: var(--fc);
   width: 35px;
   height: 35px;
   cursor: pointer;
@@ -149,39 +176,17 @@ const SadIcon = styled(SadCry)`
 `;
 
 const SmileIcon = styled(SmileBeam)`
-  color: white;
-  width: 35px;
-  height: 35px;
+  color: var(--fc);
   cursor: pointer;
+  height: 35px;
   margin: 0;
+  width: 35px;
 `;
 
 const ShockIcon = styled(Shocked2)`
-  color: white;
-  width: 35px;
+  color: var(--fc);
+  cursor: pointer;
   height: 35px;
-  cursor: pointer;
   margin: 0;
-`;
-
-const TrueButton = styled.button`
-  border-radius: 10px;
-  padding: 1rem;
-  cursor: pointer;
-  background: transparent;
-  color: white;
-  border: solid white 1px;
-  border: ${({ correct }) => (correct ? 'solid 2px green' : 'solid 2px red')};
-  border: ${({ show }) => !show && 'solid 2px white'};
-`;
-
-const FalseButton = styled.button`
-  border-radius: 10px;
-  padding: 1rem;
-  cursor: pointer;
-  background: transparent;
-  color: white;
-  border: solid white 1px;
-  border: ${({ correct }) => (!correct ? 'solid 2px green' : 'solid 2px red')};
-  border: ${({ show }) => !show && 'solid 2px white'};
+  width: 35px;
 `;

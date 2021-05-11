@@ -1,16 +1,10 @@
-import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { replaceEntity } from '../lib/helperFunctions';
 
 export default function useQuizSearch({ load }) {
-  const initialCard = [
-    {
-      question: 'Loading...',
-      correctAnswer: 'Loading...',
-      incorrectAnswer: 'Loading...',
-    },
-  ];
+  const [cards, setCards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [cards, setCards] = useState(initialCard);
 
   useEffect(() => {
     async function getCards() {
@@ -20,23 +14,18 @@ export default function useQuizSearch({ load }) {
           `https://opentdb.com/api.php?amount=10&category=15&difficulty=easy&type=boolean`
         );
         const data = request.data.results.map((card) => ({
-          question: card.question
-            .replace(/&quot;/g, '')
-            .replace(/&#039;/g, '´')
-            .replace(/&eacute;/g, 'e'),
+          question: replaceEntity(card.question),
           correctAnswer: card.correct_answer,
           incorrectAnswer: card.incorrect_answers,
         }));
-        cards === initialCard ? setCards(data) : setCards([...cards, ...data]);
-
+        setCards([...cards, ...data]);
         setIsLoading(false);
       } catch (error) {
         console.error(error.message);
       }
     }
     getCards();
-    // eslint-disable-next-line
   }, [load]);
 
-  return { isLoading, cards, setIsLoading };
+  return { cards, isLoading, setIsLoading };
 }

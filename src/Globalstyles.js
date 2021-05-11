@@ -4,10 +4,14 @@ export const GlobalStyles = createGlobalStyle`
 
 
 :root {
+  --fc: white;
   --fs-h1: 3rem;
   --fs-h2: 2.25rem;
   --fs-h3: 1.25rem;
   --fs-body: 1rem;
+
+  --clr-bg: linear-gradient(to right, #000428, #004e92);
+  --clr-bor: white;
 }
 
 
@@ -18,25 +22,21 @@ export const GlobalStyles = createGlobalStyle`
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
-  background: linear-gradient(to right, #000428, #004e92);
+  background: var(--clr-bg);
   font-family: 'Roboto', sans-serif;
   font-size: var(--fs-body);
-  
+  margin: 0;
+  min-height: 100vh;
 }
 
 h1,h2,h3,p {
+  color: var(--fc);
   line-height: 1;
   margin: 0;
-  color: white;
 }
 
 
-
-
 h1{
- 
   font-size: var(--fs-h1);
 }
 
@@ -46,6 +46,5 @@ h2 {
 h3 {
   font-size: var(--fs-h3);
 }
-
 
 `;
