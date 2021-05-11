@@ -5,13 +5,14 @@ export const GlobalStyles = createGlobalStyle`
 
 :root {
   --fc: white;
-  --fs-h1: 3rem;
+  --fs-h1: 2.5rem;
   --fs-h2: 2.25rem;
   --fs-h3: 1.25rem;
   --fs-body: 1rem;
 
   --clr-bg: linear-gradient(to right, #000428, #004e92);
   --clr-bor: white;
+  --clr-btn-hov: hsla(360, 100%, 100%, 0.3);
 }
 
 

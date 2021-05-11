@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { isMobile } from 'react-device-detect';
 import useQuizSearch from '../hooks/useQuizSearch';
 import FetchAnswerCards from './FetchAnswerCards';
+import LoadingSpinner from './assets/LoadingSpinner.gif';
 
 export default function FetchQuestions() {
   const [load, setLoad] = useState(false);
@@ -11,7 +13,9 @@ export default function FetchQuestions() {
   const [page, setPage] = useState(0);
 
   return isLoading ? (
-    <h1>loading...</h1>
+    <Wrapper isLoading={isLoading}>
+      <Spinner src={LoadingSpinner} alt="Loading" isMobile={isMobile} />
+    </Wrapper>
   ) : (
     <Wrapper>
       <p>{`Question ${page + 1}`}</p>
@@ -42,6 +46,7 @@ const Wrapper = styled.div`
   border: solid var(--clr-bor) 2px;
   border-radius: 20px;
   margin-top: 1rem;
+  height: ${({ isLoading }) => (isLoading ? '56vH' : '')};
 
   p {
     font-size: 1.2rem;
@@ -63,4 +68,10 @@ const QuizWrapper = styled.div`
     line-height: 1.5;
     padding: 0 0.5rem;
   }
+`;
+
+const Spinner = styled.img`
+  margin: auto;
+  display: block;
+  max-height: ${({ isMobile }) => (isMobile ? '100px' : '200px')};
 `;
