@@ -12,7 +12,7 @@ export const GlobalStyles = createGlobalStyle`
 
   --clr-bg: linear-gradient(to right, #000428, #004e92);
   --clr-bor: white;
-  --clr-btn-hov: hsla(360, 100%, 100%, 0.3);
+  --clr-btn-hov: hsla(360, 100%, 100%, 0.1);
 }
 
 
