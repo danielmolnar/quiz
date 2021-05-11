@@ -1,25 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import styled from 'styled-components';
+
+import FetchQuestions from './Components/FetchQuestions';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <MainWrapper>
+      <h1>Quiz App</h1>
+      <Wrapper>
+        <FetchQuestions />
+      </Wrapper>
+    </MainWrapper>
   );
 }
 
 export default App;
+
+const Wrapper = styled.div`
+  padding: 0 1rem;
+`;
+
+const MainWrapper = styled.div`
+  width: 100%;
+  max-width: 1020px;
+  min-height: 100vh;
+  margin: 0 auto;
+
+  h1 {
+    text-align: center;
+    padding: 2rem;
+  }
+`;
