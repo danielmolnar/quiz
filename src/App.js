@@ -5,7 +5,7 @@ import FetchQuestions from './Components/FetchQuestions';
 function App() {
   return (
     <MainWrapper>
-      <h1>Quiz App</h1>
+      <h1>Gaming Trivia</h1>
       <Wrapper>
         <FetchQuestions />
       </Wrapper>

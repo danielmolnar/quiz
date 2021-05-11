@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { useState, useEffect } from 'react';
+import { isMobile } from 'react-device-detect';
 import { RightArrowCircle } from '@styled-icons/boxicons-solid/RightArrowCircle';
 import { LeftArrowCircle } from '@styled-icons/boxicons-solid/LeftArrowCircle';
 import { SmileBeam } from '@styled-icons/fa-solid/SmileBeam';
@@ -20,13 +22,18 @@ export default function FetchAnswerCards({
   setCompleted,
 }) {
   const [show, setShow] = useState(false);
+
+  const correct = +getBool(cards[page].correctAnswer);
   const answeredPage = (page + 1).toString();
   const answered = completed.includes(answeredPage);
-  const correct = +getBool(cards[page].correctAnswer);
-
+  const reveal = completed.includes((page + 1).toString());
   const ratio = score / completed.length;
   const shockScore = ratio >= 0.35 && ratio <= 0.5;
   const goodScore = ratio > 0.5;
+
+  useEffect(() => {
+    reveal ? setShow(true) : setShow(false);
+  }, [page]);
 
   let isCorrect;
   if (correct === 1 && show) {
@@ -34,33 +41,33 @@ export default function FetchAnswerCards({
   } else isCorrect = false;
 
   const handlePrevPage = () => {
-    setShow(false);
-    if (page >= 1) {
+    if (page > 0) {
       setPage((prevPage) => prevPage - 1);
     }
   };
 
   const handleNextPage = () => {
-    setPage((prevPage) => prevPage + 1);
-    setShow(false);
-    if (page === cards.length - 1) {
-      setLoad(!load);
-      setIsLoading(true);
+    if (page + 1 <= completed.length) {
+      setPage((prevPage) => prevPage + 1);
+      if (page === cards.length - 1) {
+        setLoad(!load);
+        setIsLoading(true);
+      }
     }
   };
 
   const handleButtonClick = (event) => {
     event.preventDefault();
     const value = parseInt(event.target.value);
-    setCompleted([...completed, answeredPage]);
+    !answered && setCompleted([...completed, answeredPage]);
     answered ? alert('Nice Try') : setScore((prev) => prev + value);
-    setShow(!show);
+    setShow(true);
   };
 
   return (
     <>
       <ButtonWrapper>
-        <BackIcon onClick={handlePrevPage} />
+        <BackIcon onClick={handlePrevPage} isMobile={isMobile} />
         <TrueButton
           show={show}
           correct={isCorrect}
@@ -77,7 +84,7 @@ export default function FetchAnswerCards({
         >
           False
         </FalseButton>
-        <NextIcon onClick={handleNextPage} />
+        <NextIcon onClick={handleNextPage} isMobile={isMobile} />
       </ButtonWrapper>
       <ScoreWrapper>
         <p>{`Score: ${score}/${completed.length}`}</p>
@@ -93,10 +100,23 @@ export default function FetchAnswerCards({
   );
 }
 
+FetchAnswerCards.propTypes = {
+  load: PropTypes.bool,
+  page: PropTypes.number,
+  cards: PropTypes.array,
+  score: PropTypes.number,
+  setLoad: PropTypes.func,
+  setPage: PropTypes.func,
+  setScore: PropTypes.func,
+  completed: PropTypes.array,
+  setIsLoading: PropTypes.func,
+  setCompleted: PropTypes.func,
+};
+
 const TrueButton = styled.button`
   border: ${({ correct }) => (correct ? 'solid 2px green' : 'solid 2px red')};
   border: ${({ show }) => !show && 'solid 2px var(--clr-bor)'};
-  background: transparent;
+  background: none;
   border-radius: 10px;
   color: var(--fc);
   cursor: pointer;
@@ -104,12 +124,16 @@ const TrueButton = styled.button`
   font-weight: bold;
   min-width: 6rem;
   padding: 1rem;
+
+  &:hover {
+    background: var(--clr-btn-hov);
+  }
 `;
 
 const FalseButton = styled.button`
   border: ${({ correct }) => (correct ? 'solid 2px red' : 'solid 2px green')};
   border: ${({ show }) => !show && 'solid 2px var(--clr-bor)'};
-  background: transparent;
+  background: none;
   border-radius: 10px;
   color: var(--fc);
   cursor: pointer;
@@ -117,6 +141,10 @@ const FalseButton = styled.button`
   font-weight: bold;
   min-width: 6rem;
   padding: 1rem;
+
+  &:hover {
+    background: var(--clr-btn-hov);
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -150,7 +178,7 @@ const BackIcon = styled(LeftArrowCircle)`
 
   transition: transform 550ms;
   &:hover {
-    transform: scale(1.15);
+    transform: ${({ isMobile }) => (isMobile ? '' : 'scale(1.15)')};
   }
 `;
 
@@ -163,7 +191,7 @@ const NextIcon = styled(RightArrowCircle)`
 
   transition: transform 550ms;
   &:hover {
-    transform: scale(1.15);
+    transform: ${({ isMobile }) => (isMobile ? '' : 'scale(1.15)')};
   }
 `;
 
