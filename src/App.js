@@ -4,23 +4,29 @@ import FetchQuestions from './Components/FetchQuestions';
 
 function App() {
   return (
-    <Wrapper>
+    <MainWrapper>
       <h1>Quiz App</h1>
-
-      <FetchQuestions />
-    </Wrapper>
+      <Wrapper>
+        <FetchQuestions />
+      </Wrapper>
+    </MainWrapper>
   );
 }
 
 export default App;
 
 const Wrapper = styled.div`
+  padding: 0 1rem;
+`;
+
+const MainWrapper = styled.div`
   width: 100%;
   max-width: 1020px;
   min-height: 100vh;
   margin: 0 auto;
-  border: solid white 1px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+
+  h1 {
+    text-align: center;
+    padding: 2rem;
+  }
 `;

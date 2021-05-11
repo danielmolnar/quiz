@@ -1,9 +1,24 @@
 import styled from 'styled-components';
 import { useState } from 'react';
+import { LeftArrowCircle } from '@styled-icons/boxicons-solid/LeftArrowCircle';
+import { RightArrowCircle } from '@styled-icons/boxicons-solid/RightArrowCircle';
+import { Shocked2 } from '@styled-icons/icomoon/Shocked2';
+import { SadCry } from '@styled-icons/fa-solid/SadCry';
+import { SmileBeam } from '@styled-icons/fa-solid/SmileBeam';
 
-export default function FetchAnswerCards({ cards, page, show, setShow }) {
-  const [submit, setSubmit] = useState(false);
-  const [score, setScore] = useState(0);
+export default function FetchAnswerCards({
+  cards,
+  setIsLoading,
+  load,
+  setLoad,
+  page,
+  setPage,
+  setScore,
+  score,
+  completed,
+  setCompleted,
+}) {
+  const [show, setShow] = useState(false);
 
   function getBool(val) {
     const num = +val;
@@ -17,20 +32,43 @@ export default function FetchAnswerCards({ cards, page, show, setShow }) {
     correctChecker = true;
   } else correctChecker = false;
 
+  const handlePrevPage = () => {
+    setShow(false);
+    if (page >= 1) {
+      setPage((prevPage) => prevPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    setPage((prevPage) => prevPage + 1);
+    setShow(false);
+    console.log(completed);
+
+    if (page === cards.length - 1) {
+      setLoad(!load);
+      setIsLoading(true);
+    }
+  };
+
+  const answeredPage = (page + 1).toString();
+  const answered = completed.includes(answeredPage);
+
   const handleButtonClick = (event) => {
     event.preventDefault();
-    const value = event.target.value;
-    if (!submit) {
-      setScore((prev) => prev + value);
-      setSubmit(true);
-    }
+    const value = parseInt(event.target.value);
+    setCompleted([...completed, answeredPage]);
+    answered ? alert('Nice Try') : setScore((prev) => prev + value);
     setShow(!show);
   };
 
+  const ratio = score / completed.length;
+  const shockScore = ratio >= 0.35 && ratio <= 0.5;
+  const goodScore = ratio > 0.5;
+
   return (
-    <CardWrapper>
-      <h3>{cards[page].question}</h3>
-      <Answer>
+    <>
+      <ButtonWrapper>
+        <BackIcon onClick={handlePrevPage} />
         <TrueButton
           value={correct ? 1 : 0}
           correct={correctChecker}
@@ -47,10 +85,84 @@ export default function FetchAnswerCards({ cards, page, show, setShow }) {
         >
           False
         </FalseButton>
-      </Answer>
-    </CardWrapper>
+        <NextIcon onClick={handleNextPage} />
+      </ButtonWrapper>
+      <ScoreWrapper>
+        <p>{`Score: ${score}/${completed.length}`}</p>
+        {completed.length === 0 ? null : goodScore ? (
+          <SmileIcon />
+        ) : shockScore ? (
+          <ShockIcon />
+        ) : (
+          <SadIcon />
+        )}
+      </ScoreWrapper>
+    </>
   );
 }
+
+const ScoreWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0rem;
+
+  p {
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 1rem;
+  width: 100%;
+  max-width: 500px;
+  border: solid white 1px;
+`;
+
+const BackIcon = styled(LeftArrowCircle)`
+  color: white;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  margin: 0;
+`;
+
+const NextIcon = styled(RightArrowCircle)`
+  color: white;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  margin: 0;
+`;
+
+const SadIcon = styled(SadCry)`
+  color: white;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  margin: 0;
+`;
+
+const SmileIcon = styled(SmileBeam)`
+  color: white;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  margin: 0;
+`;
+
+const ShockIcon = styled(Shocked2)`
+  color: white;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  margin: 0;
+`;
 
 const TrueButton = styled.button`
   border-radius: 10px;
@@ -73,45 +185,3 @@ const FalseButton = styled.button`
   border: ${({ correct }) => (!correct ? 'solid 2px green' : 'solid 2px red')};
   border: ${({ show }) => !show && 'solid 2px white'};
 `;
-
-const Answer = styled.div`
-  display: flex;
-  justify-content: space-around;
-  padding: 1rem;
-
-  button {
-  }
-
-  button:first-child {
-    margin-right: 2rem;
-    /* border: ${({ correct }) =>
-      correct ? 'solid 2px green' : 'solid 2px red'}; */
-  }
-`;
-
-const CardWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  border: solid white 1px;
-`;
-
-// const Answers = styled.div`
-//   display: flex;
-//   justify-content: space-around;
-//   align-items: center;
-//   flex-wrap: wrap;
-//   border-radius: 10px;
-//   padding: 2rem;
-//   width: 100%;
-// `;
-
-// {card.map((answer) => (
-//   <AnswerCard
-//     answer={answer}
-//     key={answer.id}
-//     show={show}
-//     handleShow={handleShow}
-//   />
-// ))}
